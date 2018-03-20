@@ -35,8 +35,9 @@ class Flattener:
 			block = self._function.get_basic_block_at(address)
 			code += self.process_block(block)
 
+                        # Ensure we follow the immediate branch first
                         for edge in block.outgoing_edges:
-                                self._todo.append(edge.target.start)
+                            self._todo.append(edge.target.start)
 
 		return code
 
