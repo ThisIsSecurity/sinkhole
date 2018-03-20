@@ -19,7 +19,7 @@ class Flattener:
             return
 
         self._todo = []
-        self._visited = []
+        self._visited = set()
 
     def flatten(self, address):
         code = ''
@@ -31,7 +31,7 @@ class Flattener:
             if address in self._visited:
                 continue
 
-            self._visited.append(address)
+            self._visited.add(address)
             block = self._function.get_basic_block_at(address)
             code += self.process_block(block)
 
