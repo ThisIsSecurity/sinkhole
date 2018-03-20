@@ -46,7 +46,7 @@ class Flattener:
 		asm = block.disassembly_text
 
 		# Add label
-		if block.incoming_edges:
+		if len(block.incoming_edges) > 0:
 			code += "loc_{:x}:\n".format(block.start)
 
 		# Read insts
@@ -78,7 +78,7 @@ class Flattener:
 		# Handle symbols
 		for token in tokens:
 			symbol = self._view.get_symbol_by_raw_name(token.text)
-			if symbol:
+			if symbol is not None:
 				lifted_inst = lifted_inst.replace(token.text, hex(symbol.address)[:-1])
 
 		edges = block.outgoing_edges
