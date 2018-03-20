@@ -21,12 +21,9 @@ class Flattener:
 		self._todo = []
 		self._visited = []
 
-	def todo(self, address):
-		self._todo.append(address)
-
 	def flatten(self, address):
 		code = ''
-		self.todo(address)
+		self._todo.append(address)
 
 		while len(self._todo) > 0:
 			address = self._todo.pop()
@@ -37,15 +34,10 @@ class Flattener:
 			self._visited.append(address)
 			block = self._function.get_basic_block_at(address)
 			code += self.process_block(block)
-			edges = block.outgoing_edges
-			if not edges:
-				continue
-			if len(edges) == 1:
-				self.todo(edges[0].target.start)
-			else:
-				# Follow immediate branch first
-				self.todo(edges[0].target.start)
-				self.todo(edges[1].target.start)
+
+                        # Ensure we follow the immediate branch first
+                        for edge in block.outgoing_edges:
+                            self._todo.append(edge.target.start)
 
 		return code
 
@@ -54,7 +46,7 @@ class Flattener:
 		asm = block.disassembly_text
 
 		# Add label
-		if len(block.incoming_edges):
+		if len(block.incoming_edges) > 0:
 			code += "loc_{:x}:\n".format(block.start)
 
 		# Read insts
@@ -67,15 +59,12 @@ class Flattener:
 		tokens = inst.tokens
 		inst_name = str(tokens[0]).strip()
 
+		if inst_name == 'nop':  # Discard NOPs
+			return ''
+		elif inst_name == self._name:  # Remove function label
+			return ''
+
 		lifted_inst = str(inst)
-
-		# Discard NOPs
-		if inst_name == 'nop':
-			return ''
-
-		# Remove function label
-		if inst_name == self._name:
-			return ''
 
 		# Remove useless {...}
 		lifted_inst = re.sub('\{.*\}', '', lifted_inst)
@@ -93,8 +82,8 @@ class Flattener:
 				lifted_inst = lifted_inst.replace(token.text, hex(symbol.address)[:-1])
 
 		edges = block.outgoing_edges
-		nb_edges = len(edges)
-		if nb_edges > 0 and inst_name in JUMPS:
+		if edges and inst_name in JUMPS:
+                        nb_edges = len(edges)
 			if nb_edges == 2 or (nb_edges == 1 and len(edges[0].target.incoming_edges) != 1):
 				# Due to instruction removal, original instruction offsets are shifted.
 				# In order to preserve CFG structure, branch target addresses are substituted with labels
