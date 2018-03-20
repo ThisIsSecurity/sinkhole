@@ -84,7 +84,7 @@ class Flattener:
 				lifted_inst = lifted_inst.replace(token.text, hex(symbol.address)[:-1])
 
 		edges = block.outgoing_edges
-		if edges > 0 and inst_name in JUMPS:
+		if edges and inst_name in JUMPS:
                         nb_edges = len(edges)
 			if nb_edges == 2 or (nb_edges == 1 and len(edges[0].target.incoming_edges) != 1):
 				# Due to instruction removal, original instruction offsets are shifted.
