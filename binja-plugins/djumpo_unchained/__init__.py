@@ -21,9 +21,6 @@ class Flattener:
 		self._todo = []
 		self._visited = []
 
-	def todo(self, address):
-		self._todo.append(address)
-
 	def flatten(self, address):
 		code = ''
 		self._todo.append(address)
