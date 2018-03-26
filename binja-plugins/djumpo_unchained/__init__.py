@@ -67,7 +67,7 @@ class Flattener:
         lifted_inst = str(inst)
 
         # Remove useless {...}
-        lifted_inst = re.sub('\{.*\}', '', lifted_inst)
+        lifted_inst = re.sub('\{.*?\}', '', lifted_inst)
 
         # Hack aroud stos{b,w,d} insts -- fails to assemble
         lifted_inst = re.sub('(stosb|stosw|stosd).*', '\\1', lifted_inst)
