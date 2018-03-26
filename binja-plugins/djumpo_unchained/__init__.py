@@ -15,7 +15,7 @@ class Flattener:
 
         self._arch = self._view.arch
         if self._arch.name not in ['x86', 'x86_64']:
-            show_message_box("Djumpo Unchained", "Insupported architecture", OKButtonSet, InformationIcon)
+            show_message_box("Djumpo Unchained", "Unsupported architecture", MessageBoxButtonSet.OKButtonSet,  MessageBoxIcon.InformationIcon)
             return
 
         self._todo = []
